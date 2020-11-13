@@ -1,0 +1,138 @@
+﻿@inject IRaidRepository raidRepository
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.js"></script>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding-left: 0.5em;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            padding-right: 0.5em;
+        }
+
+        form {
+            margin: 0px !important;
+            padding: 0px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                @if (IsSignedInUser())
+                {
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Roster
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                @if (IsAdmin())
+                                {
+                                    <a class="dropdown-item" asp-action="@nameof(CharacterController.AddCharacter)" asp-controller="@CharacterController.GetName()">Add Character</a>
+                                }
+                                <a class="dropdown-item" asp-action="@nameof(CharacterController.ViewCharacters)" asp-controller="@CharacterController.GetName()">View Characters</a>
+                            </div>
+                        </li>
+
+                        @if (IsGuildMaster())
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Guild
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-action="@nameof(RaidTeamController.ViewRaidTeams)" asp-controller="@RaidTeamController.GetName()">Raid Teams</a>
+                                </div>
+                            </li>
+                        }
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Raid
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" asp-action="@nameof(RaidEventController.ViewRaidEvents)" asp-controller="@RaidEventController.GetName()">Raid Events</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Loot Priority
+                            </a>
+                            @foreach (Raid raid in raidRepository.GetRaids())
+                            {
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-action="@nameof(ItemPriorityController.ViewItemPrioritiesByRaid)" asp-controller="@ItemPriorityController.GetName()" asp-route-raidId="@raid.Id">@raid.ShortName</a>
+                                </div>
+                            }
+                        </li>
+                    </ul>
+                }
+                <ul class="navbar-nav ml-auto">
+                    @if (!IsSignedInUser())
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Register
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" asp-action="@nameof(AccountController.JoinGuild)" asp-controller="@AccountController.GetName()">Join guild</a>
+                                <a class="dropdown-item" asp-action="@nameof(AccountController.CreateGuild)" asp-controller="@AccountController.GetName()">Create guild</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-action="@nameof(AccountController.Login)" asp-controller="@AccountController.GetName()">Login</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <form id="logout-form" method="post" asp-action="@nameof(AccountController.Logout)" asp-controller="@AccountController.GetName()">
+                                <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit()">Logout</a>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </nav>
+        <div>
+            @if (HasErrorMessage())
+            {
+                <p class="alert alert-danger">@GetErrorMessage()</p>
+            }
+
+            @if (HasSuccessMessage())
+            {
+                <p class="alert alert-success">@GetSuccessMessage()</p>
+            }
+
+            @RenderBody()
+        </div>
+
+        @if (IsSectionDefined("Scripts"))
+        {
+            @RenderSection("Scripts", required: true)
+        }
+    </div>
+</body>
+</html>

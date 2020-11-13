@@ -1,0 +1,33 @@
+﻿@model RaidEventViewModel
+@inject IRaidRepository raidRepository
+@inject IRaidTeamRepository raidTeamRepository
+
+@{
+    IList<RaidTeam> raidTeams = raidTeamRepository.GetRaidTeams();
+}
+
+<div class="form-group">
+    <label asp-for="Date"></label>
+    <input type="date" asp-for="Date" class="form-control" />
+</div>
+
+@if (IsEntityAdd())
+{
+    <div class="form-group">
+        <label asp-for="RaidId"></label>
+        <div>
+            <select asp-for="RaidId" asp-items="@(new SelectList(raidRepository.GetRaids(), nameof(Raid.Id), nameof(Raid.ShortName)))"></select>
+        </div>
+    </div>
+}
+else
+{
+    <input hidden asp-for="RaidId" />
+}
+
+<div class="form-group">
+    <label asp-for="RaidTeamId"></label>
+    <div>
+        <select asp-for="RaidTeamId" asp-items="@(new SelectList(raidTeams, nameof(RaidTeam.Id), nameof(RaidTeam.Name)))"></select>
+    </div>
+</div>

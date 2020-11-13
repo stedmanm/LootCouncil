@@ -1,0 +1,25 @@
+﻿@model IList<RaidTeam>
+
+<a asp-action="@nameof(RaidTeamController.AddRaidTeam)" asp-controller="@RaidTeamController.GetName()"
+   class="btn btn-primary mb-3 mt-3" style="width:auto">
+    Add
+</a>
+
+@foreach (var raidTeam in Model)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3>@raidTeam.Name</h3>
+        </div>
+        <div class="card-footer">
+            <form method="post" asp-controller="@RaidTeamController.GetName()" asp-action="@nameof(RaidTeamController.DeleteRaidTeam)"
+                  asp-route-id="@raidTeam.Id">
+
+                <a asp-controller="@RaidTeamController.GetName()" asp-action="@nameof(RaidTeamController.EditRaidTeam)"
+                   asp-route-id="@raidTeam.Id" class="btn btn-primary">Edit</a>
+
+                <button type="submit" class="btn btn-danger ml-1" onclick="return confirm('@string.Format(Strings.AreYouSureYouWantToDelete, raidTeam.Name)')">Delete</button>
+            </form>
+        </div>
+    </div>
+}

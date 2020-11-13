@@ -1,0 +1,35 @@
+﻿@model CharacterLootViewModel
+@{
+    string itemNeedReasonsDisplay = Enum.GetValues(typeof(ItemNeedReason)).Cast<ItemNeedReason>().Select(i =>
+    {
+        if (Model.CountsByReasons.ContainsKey(i))
+            return i.DisplayEnum() + ": " + Model.CountsByReasons[i];
+        else
+            return null;
+
+    }).Where(s => s != null).JoinToString();
+}
+
+<h3>@Model.Character.ToString()</h3>
+<h5>@itemNeedReasonsDisplay</h5>
+
+<table style="width:100%">
+    <tr>
+        <th>Item</th>
+        <th>Need Reason</th>
+        <th>Date</th>
+        <th>Raid</th>
+        <th>Boss</th>
+    </tr>
+
+    @foreach (CharactLootViewModelItem loot in Model.Items)
+    {
+        <tr>
+            <td style="width:auto">@loot.ItemName</td>
+            <td style="width:auto">@loot.ItemNeedReason</td>
+            <td style="width:auto">@loot.RaidDate</td>
+            <td style="width:auto">@loot.RaidName</td>
+            <td style="width:auto">@loot.BossName</td>
+        </tr>
+    }
+</table>

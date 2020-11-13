@@ -1,0 +1,29 @@
+﻿@model LootViewModel
+@inject IRaidEventRepository raidEventRepository
+
+@{
+    RaidEvent raidEvent = raidEventRepository.GetRaidEventById(Model.RaidEventId);
+}
+
+<h3>@raidEvent.ToString()</h3>
+
+<input hidden asp-for="RaidEventId" />
+
+<div class="form-group">
+    <label asp-for="CharacterName"></label>
+    <input asp-for="CharacterName" type="search" list="@RazorPageHelper.CharacterDropDownId" autocomplete="off" placeholder="Enter character name..." class="form-control" />
+    @await Html.PartialAsync(RazorPageHelper.CharacterDropDownView, RazorPageHelper.CharacterDropDownId)
+</div>
+
+<div class="form-group">
+    <label asp-for="ItemName"></label>
+    <input asp-for="ItemName" type="search" list="@RazorPageHelper.ItemDropDownId" autocomplete="off" placeholder="Enter item name..." class="form-control" />
+    @await Html.PartialAsync(RazorPageHelper.ItemDropDownView, raidEvent.Raid.Id)
+</div>
+
+<div class="form-group">
+    <label asp-for="ItemNeedReason"></label>
+    <div>
+        <select asp-for="ItemNeedReason" asp-items="Html.GetEnumSelectList<ItemNeedReason>(true)"></select>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+﻿@model ItemPriorityViewModel
+
+<input hidden asp-for="RaidId" />
+
+<div class="form-group">
+    <label asp-for="ItemPriorityName"></label>
+    <input asp-for="ItemPriorityName" class="form-control" />
+</div>
+
+<div class="form-group">
+    <label asp-for="ItemName"></label>
+    <input asp-for="ItemName" type="search" list="itemNames" autocomplete="off" placeholder="Enter item name..." class="form-control" />
+    @await Html.PartialAsync(RazorPageHelper.ItemDropDownView, Model.RaidId)
+</div>
+
+@for (int i = 0; i < ItemPriorityViewModel.CharacterLimit; i++)
+{
+    string dataListId = RazorPageHelper.CharacterDropDownId + (i + 1);
+    string label = "Character #" + (i + 1);
+    <div class="form-group">
+        <label asp-for="@Model.CharacterNames[i]">@label</label>
+        <input asp-for="@Model.CharacterNames[i]" type="search" list="@dataListId" autocomplete="off" placeholder="Enter character name..." class="form-control" />
+        @await Html.PartialAsync(RazorPageHelper.CharacterDropDownView, dataListId)
+    </div>
+}

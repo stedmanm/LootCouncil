@@ -1,0 +1,31 @@
+﻿@model Character
+
+@{
+    Faction faction = GetCurrentUser().Guild.Faction;
+}
+
+<div class="form-group">
+    <label asp-for="Name"></label>
+    <input asp-for="Name" class="form-control" />
+</div>
+
+<div class="form-group">
+    <label asp-for="Race"></label>
+    <div>
+        <select asp-for="Race" asp-items="Html.GetEnumSelectList<Race>(true, r=>r.BelongsToFaction(faction))"></select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="Class"></label>
+    <div>
+        <select asp-for="Class" asp-items="Html.GetEnumSelectList<Class>(true, c=>c.BelongsToFaction(faction))"></select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="Type"></label>
+    <div>
+        <select asp-for="Type" asp-items="Html.GetEnumSelectList<CharacterType>(true)"></select>
+    </div>
+</div>

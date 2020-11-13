@@ -1,0 +1,14 @@
+﻿@model string
+@inject ICharacterRepository characterRepository
+
+@{
+    string dataListId = Model;
+    IEnumerable<Character> characters = characterRepository.GetCharacters().OrderBy(c => c.Name);
+}
+
+<datalist id="@dataListId">
+    @foreach (Character character in characters)
+    {
+        <option>@character.Name</option>
+    }
+</datalist>

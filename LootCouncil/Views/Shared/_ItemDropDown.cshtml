@@ -1,0 +1,16 @@
+﻿@model long
+@inject IRaidRepository raidRepository
+@inject IItemRepository itemRepository
+
+@{
+    long raidId = Model;
+    Raid raid = raidRepository.GetRaidById(raidId);
+    IEnumerable<Item> items = itemRepository.GetItemsByRaid(raid).OrderBy(i => i.Name);
+}
+
+<datalist id="@RazorPageHelper.ItemDropDownId">
+    @foreach (Item item in items)
+    {
+        <option>@item.Name</option>
+    }
+</datalist>

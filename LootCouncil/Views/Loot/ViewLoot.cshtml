@@ -1,0 +1,42 @@
+﻿@model RaidEventLootViewModel
+@{
+    bool isAdmin = IsAdmin();
+}
+
+<h3>@Model.RaidEvent.ToString()</h3>
+
+<table style="width:100%">
+    <tr>
+        <th>Character</th>
+        <th>Item</th>
+        <th>Boss</th>
+        <th>Need Reason</th>
+        @if (isAdmin)
+        {
+            <th>Actions</th>
+        }
+    </tr>
+
+    @foreach (RaidEventLootViewModelItem loot in Model.Items)
+    {
+        <tr style="background-color:@loot.Color;">
+            <td style="width:auto">@loot.CharacterName</td>
+            <td style="width:auto">@loot.ItemName</td>
+            <td style="width:auto">@loot.BossName</td>
+            <td style="width:auto">@loot.ItemNeedReason</td>
+            @if (isAdmin)
+            {
+                <td style="width:151px">
+                    <form method="post" asp-controller="@LootController.GetName()" asp-action="@nameof(LootController.DeleteLoot)"
+                          asp-route-id="@loot.Id">
+
+                        <a asp-controller="@LootController.GetName()" asp-action="@nameof(LootController.EditLoot)"
+                           asp-route-id="@loot.Id" class="btn btn-primary">Edit</a>
+
+                        <button type="submit" class="btn btn-danger ml-1" onclick="return confirm('@string.Format(Strings.AreYouSureYouWantToDelete, "loot")')">Delete</button>
+                    </form>
+                </td>
+            }
+        </tr>
+    }
+</table>

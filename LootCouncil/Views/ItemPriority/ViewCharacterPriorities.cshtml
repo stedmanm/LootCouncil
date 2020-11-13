@@ -1,0 +1,23 @@
+﻿@model ViewCharacterPriortiesViewModel
+
+@if (Model.Priorities.Any())
+{
+    <h3>@Model.Character.ToString()</h3>
+}
+else
+{
+    <h3>No Assigned Priorities</h3>
+}
+
+@foreach (var priority in Model.Priorities)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3>#@priority.Priority @priority.ItemName</h3>
+        </div>
+        <div class="card-footer">
+            <a asp-controller="@ItemPriorityController.GetName()" asp-action="@nameof(ItemPriorityController.ViewItemPrioritiesBySelected)"
+               asp-route-selectedId="@priority.ItemPriorityId" class="btn btn-primary">View</a>
+        </div>
+    </div>
+}

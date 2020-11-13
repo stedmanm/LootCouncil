@@ -1,0 +1,21 @@
+﻿@model AddCharacterPriorityViewModel
+@inject IItemPriorityRepository itemPriorityRepository 
+
+<h3>@itemPriorityRepository.GetItemPriorityById(Model.ItemPriorityId).Name</h3>
+
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <input hidden asp-for="ItemPriorityId" value="@Model.ItemPriorityId" />
+
+            <div class="form-group">
+                <input asp-for="CharacterName" type="search" list="@RazorPageHelper.CharacterDropDownId" autocomplete="off" placeholder="Enter character name..." class="form-control" />
+                @await Html.PartialAsync(RazorPageHelper.CharacterDropDownView, RazorPageHelper.CharacterDropDownId)
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+</div>

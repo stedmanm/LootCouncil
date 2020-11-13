@@ -227,7 +227,7 @@ namespace LootCouncil.Controllers
             };
 
             if (selectedItemPriority == null)
-                model.SelectedItemPriority = model.ItemPriorities.FirstOrDefault();
+                model.SelectedItemPriority = model.ItemPriorities.FirstOrDefault() ?? new ItemPriority();
 
             return View(nameof(ViewItemPriorities), model);
         }

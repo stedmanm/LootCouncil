@@ -54,8 +54,11 @@
     }
 }
 
-<a asp-controller="@ItemPriorityController.GetName()" asp-action="@nameof(ItemPriorityController.AddCharacterPriority)"
-   asp-route-itemPriorityId="@Model.SelectedItemPriority.Id" class="btn btn-primary">Add Character</a>
+@if (Model.ItemPriorities.Any())
+{
+    <a asp-controller="@ItemPriorityController.GetName()" asp-action="@nameof(ItemPriorityController.AddCharacterPriority)"
+       asp-route-itemPriorityId="@Model.SelectedItemPriority.Id" class="btn btn-primary">Add Character</a>
+}
 
 @section Scripts {
     <script>

@@ -1,4 +1,5 @@
-﻿using LootCouncil.Models.Entities;
+﻿using LootCouncil.Models.Database.Raids;
+using LootCouncil.Models.Entities;
 using LootCouncil.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -42,7 +43,7 @@ namespace LootCouncil.Models.Database
 
             modelBuilder.BuildUniqueConstraintForHasEntities();
             modelBuilder.PopulateIdentityRoles();
-            modelBuilder.PopulateRaids();
+            RaidPopulator.PopulateRaids(modelBuilder);
         }
 
         public DbSet<Guild> Guilds { get; set; }

@@ -65,7 +65,7 @@ namespace LootCouncil.Razor
 
         protected bool IsAdmin()
         {
-            return User.IsInRole(ApplicationRole.GuildMaster.ToString());
+            return User.IsInRole(ApplicationRole.Admin.ToString()) || IsGuildMaster();
         }
 
         protected bool IsGuildMaster()

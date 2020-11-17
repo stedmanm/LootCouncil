@@ -1,0 +1,30 @@
+﻿@model IEnumerable<UserAndRole>
+
+<div class="mt-3"></div>
+
+@foreach (var userAndRole in Model)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3>@userAndRole.User.DisplayName</h3>
+        </div>
+        <div class="card-footer">
+            @if (userAndRole.Role == ApplicationRole.Member)
+            {
+                <form method="post" asp-controller="@AccountController.GetName()" asp-action="@nameof(AccountController.PromoteToAdmin)"
+                      asp-route-userId="@userAndRole.User.Id">
+
+                    <button type="submit" class="btn btn-primary">Promote to Admin</button>
+                </form>
+            }
+            else
+            {
+                <form method="post" asp-controller="@AccountController.GetName()" asp-action="@nameof(AccountController.DemoteToMember)"
+                      asp-route-userId="@userAndRole.User.Id">
+
+                    <button type="submit" class="btn btn-danger">Demote to Member</button>
+                </form>
+            }
+        </div>
+    </div>
+}

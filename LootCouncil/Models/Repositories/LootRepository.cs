@@ -1,6 +1,7 @@
 ﻿using LootCouncil.Models.Database;
 using LootCouncil.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,12 @@ namespace LootCouncil.Models.Repositories
     public class LootRepository : RepositoryBase, ILootRepository
     {
         private readonly IEntityAccessor<Character> characterAccessor;
+        private readonly IItemPriorityRepository itemPriorityRepository;
 
-        public LootRepository(IRepositoryServices repositoryServices, IEntityAccessor<Character> characterAccessor) : base(repositoryServices)
+        public LootRepository(IRepositoryServices repositoryServices, IEntityAccessor<Character> characterAccessor, IItemPriorityRepository itemPriorityRepository) : base(repositoryServices)
         {
             this.characterAccessor = characterAccessor;
+            this.itemPriorityRepository = itemPriorityRepository;
         }
 
         public Loot AddLoot(RaidEvent raidEvent, Loot loot)
@@ -38,6 +41,7 @@ namespace LootCouncil.Models.Repositories
             };
 
             AppDbContext.RaidEventHasLoots.Add(raidEventHasLoot);
+            UpdateItemPriority(loot);
             AppDbContext.SaveChanges();
             return loot;
         }
@@ -45,6 +49,7 @@ namespace LootCouncil.Models.Repositories
         public Loot UpdateLoot(Loot loot)
         {
             AppDbContext.Loots.Update(loot);
+            UpdateItemPriority(loot);
             AppDbContext.SaveChanges();
             return loot;
         }
@@ -88,6 +93,29 @@ namespace LootCouncil.Models.Repositories
         private IQueryable<Loot> QueryLootByRaidEvent(RaidEvent raidEvent, bool includeEntities)
         {
             return AppDbContext.RaidEventHasLoots.QueryChildren<RaidEventHasLoot, RaidEvent, Loot>(raidEvent, includeEntities);
+        }
+
+        private void UpdateItemPriority(Loot loot)
+        {
+            long originalCharacterId = 0;
+            long originalItemId = 0;
+            
+            if (!loot.IsNew)
+            {
+                PropertyValues originalValues = AppDbContext.Entry(loot).OriginalValues;
+                originalCharacterId = (long)originalValues[nameof(Loot.Character) + "Id"];
+                originalItemId = (long)originalValues[nameof(Loot.Item) + "Id"];
+            }
+
+            if (loot.IsNew || originalCharacterId != loot.Character.Id || originalItemId != loot.Item.Id)
+            {
+                ItemPriority itemPriority = itemPriorityRepository.GetItemPriorityByCharacterAndItem(loot.Character, loot.Item);
+                if (itemPriority != null)
+                {
+                    itemPriority.DeleteCharacterPriority(loot.Character);
+                    itemPriorityRepository.UpdateItemPriority(itemPriority);
+                }
+            }
         }
     }
 }

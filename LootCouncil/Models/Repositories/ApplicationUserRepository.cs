@@ -14,8 +14,10 @@ namespace LootCouncil.Models.Repositories
     public interface IApplicationUserRepository
     {
         Task<IdentityResult> AddUserAsync(ApplicationUser user, string password, ApplicationRole applicationRole);
-
         ApplicationUser GetUserByDisplayName(Guild guild, string displayName);
+        Task<IList<UserAndRole>> GetUserAndRolesAsync();
+        ApplicationUser GetUserById(string id);
+        Task ChangeUserRoleAsync(ApplicationUser user, ApplicationRole newRole);
     }
 
     public class ApplicationUserRepository : RepositoryBase, IApplicationUserRepository
@@ -35,7 +37,7 @@ namespace LootCouncil.Models.Repositories
                 if (!result.Succeeded)
                     return result;
 
-                result = await userManager.AddToRoleAsync(user, applicationRole.ToString());
+                result = await AddRoleToUserAsync(user, applicationRole);
                 if (!result.Succeeded)
                     return result;
 
@@ -50,6 +52,50 @@ namespace LootCouncil.Models.Repositories
         public ApplicationUser GetUserByDisplayName(Guild guild, string displayName)
         {
             return AppDbContext.Users.SingleOrDefault(u => u.Guild == guild && u.DisplayName == displayName);
+        }
+
+        public async Task<IList<UserAndRole>> GetUserAndRolesAsync()
+        {
+            IList<UserAndRole> users = new List<UserAndRole>();
+
+            foreach (ApplicationUser user in QueryAccessibleUsers().ToList())
+            {
+                ApplicationRole role = await GetUserRoleAsync(user);
+                if (role != ApplicationRole.GuildMaster)
+                    users.Add(new UserAndRole { User = user, Role = role });
+            }
+
+            return users;
+        }
+
+        public async Task ChangeUserRoleAsync(ApplicationUser user, ApplicationRole newRole)
+        {
+            using (var transaction = AppDbContext.Database.BeginTransaction())
+            {
+                await userManager.RemoveFromRoleAsync(user, (await GetUserRoleAsync(user)).ToString());
+                await AddRoleToUserAsync(user, newRole);
+                transaction.Commit();
+            }
+        }
+
+        public ApplicationUser GetUserById(string id)
+        {
+            return QueryAccessibleUsers().SingleOrDefault(u => u.Id == id);
+        }
+
+        private IQueryable<ApplicationUser> QueryAccessibleUsers()
+        {
+            return AppDbContext.Users.Where(u => u.Guild == Guild);
+        }
+
+        private async Task<ApplicationRole> GetUserRoleAsync(ApplicationUser user)
+        {
+            return (ApplicationRole)Enum.Parse(typeof(ApplicationRole), (await userManager.GetRolesAsync(user)).Single());
+        }
+
+        private async Task<IdentityResult> AddRoleToUserAsync(ApplicationUser user, ApplicationRole role)
+        {
+            return await userManager.AddToRoleAsync(user, role.ToString());
         }
 
         private void InitializeGuild(Guild guild)
@@ -67,5 +113,11 @@ namespace LootCouncil.Models.Repositories
 
             AppDbContext.SaveChanges();
         }
+    }
+
+    public class UserAndRole
+    {
+        public ApplicationUser User { get; set; }
+        public ApplicationRole Role { get; set; }
     }
 }

@@ -13,7 +13,6 @@ namespace LootCouncil.Models.Repositories
     public interface IUserProvider
     {
         public ApplicationUser GetCurrentUser();
-        public ApplicationUser GetUserById(string id);
     }
 
     public class UserProvider : IUserProvider
@@ -42,7 +41,7 @@ namespace LootCouncil.Models.Repositories
             return currentUser.Value;
         }
 
-        public ApplicationUser GetUserById(string id)
+        private ApplicationUser GetUserById(string id)
         {
             return appDbContext.Users.Include(u => u.Guild).SingleOrDefault(u => u.Id == id);
         }

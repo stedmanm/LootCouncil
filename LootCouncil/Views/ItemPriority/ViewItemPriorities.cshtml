@@ -14,6 +14,11 @@
     }
 </form>
 
+@if (Model.ItemPriorities.Any())
+{
+    <h3>@Model.SelectedItemPriority.Item.Name</h3>
+}
+
 @{
     var priorities = Model.SelectedItemPriority.GetOrderedPriorities().ToArray();
     for (int i = 0; i < priorities.Length; i++)

@@ -5,6 +5,7 @@ using LootCouncil.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LootCouncil.Controllers
@@ -15,7 +16,7 @@ namespace LootCouncil.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IApplicationUserRepository applicationUserRepository;
 
-        public AccountController(IGuildRepository guildRepository, SignInManager<ApplicationUser> signInManager, IApplicationUserRepository applicationUserRepository, IControllerServices controllerServices) 
+        public AccountController(IGuildRepository guildRepository, SignInManager<ApplicationUser> signInManager, IApplicationUserRepository applicationUserRepository, IControllerServices controllerServices)
             : base(controllerServices)
         {
             this.guildRepository = guildRepository;
@@ -26,6 +27,27 @@ namespace LootCouncil.Controllers
         public static string GetName()
         {
             return ControllerHelper.GetControllerName<AccountController>();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = AuthorizationHelper.GuildMasterRole)]
+        public async Task<IActionResult> ViewUsers()
+        {
+            return View((await applicationUserRepository.GetUserAndRolesAsync()).OrderBy(u => u.User.DisplayName));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = AuthorizationHelper.GuildMasterRole)]
+        public async Task<IActionResult> PromoteToAdmin(string userId)
+        {
+            return await ChangeUserRoleAsync(userId, ApplicationRole.Admin);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = AuthorizationHelper.GuildMasterRole)]
+        public async Task<IActionResult> DemoteToMember(string userId)
+        {
+            return await ChangeUserRoleAsync(userId, ApplicationRole.Member);
         }
 
         [HttpGet]
@@ -126,6 +148,13 @@ namespace LootCouncil.Controllers
             AddErrorsToModelState(result);
 
             return View(model);
+        }
+
+        private async Task<IActionResult> ChangeUserRoleAsync(string userId, ApplicationRole newRole)
+        {
+            ApplicationUser user = applicationUserRepository.GetUserById(userId);
+            await applicationUserRepository.ChangeUserRoleAsync(user, newRole);
+            return RedirectToAction(nameof(ViewUsers));
         }
     }
 }

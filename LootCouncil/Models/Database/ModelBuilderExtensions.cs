@@ -50,12 +50,16 @@ namespace LootCouncil.Models.Database
                     ConcurrencyStamp = "9cdae67b-ac2d-4a25-a5f8-0dcca7c9de6f"
                 }
             );
-        }
 
-        public static void PopulateRaids(this ModelBuilder modelBuilder)
-        {
-            RaidPopulator raidPopulator = new RaidPopulator(modelBuilder);
-            raidPopulator.PopulateRaids();
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole
+                {
+                    Id = "f166a50a-287d-42c3-af06-f7e42977fc7c",
+                    Name = ApplicationRole.Admin.ToString(),
+                    NormalizedName = ApplicationRole.Admin.ToString().ToUpper(),
+                    ConcurrencyStamp = "057b3554-e749-4c52-859f-7732c36856d0"
+                }
+            );
         }
     }
 }

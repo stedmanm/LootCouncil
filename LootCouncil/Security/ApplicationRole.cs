@@ -8,6 +8,7 @@ namespace LootCouncil.Security
     public enum ApplicationRole
     {
         Member,
+        Admin,
         GuildMaster
     }
 }

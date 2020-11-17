@@ -57,6 +57,7 @@
 
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="dropdown-item" asp-action="@nameof(RaidTeamController.ViewRaidTeams)" asp-controller="@RaidTeamController.GetName()">Raid Teams</a>
+                                    <a class="dropdown-item" asp-action="@nameof(AccountController.ViewUsers)" asp-controller="@AccountController.GetName()">Users</a>
                                 </div>
                             </li>
                         }
@@ -77,12 +78,12 @@
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Loot Priority
                             </a>
-                            @foreach (Raid raid in raidRepository.GetRaids())
-                            {
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                @foreach (Raid raid in raidRepository.GetRaids())
+                                {
                                     <a class="dropdown-item" asp-action="@nameof(ItemPriorityController.ViewItemPrioritiesByRaid)" asp-controller="@ItemPriorityController.GetName()" asp-route-raidId="@raid.Id">@raid.ShortName</a>
-                                </div>
-                            }
+                                }
+                            </div>
                         </li>
                     </ul>
                 }

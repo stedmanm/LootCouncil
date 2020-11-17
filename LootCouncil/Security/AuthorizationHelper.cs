@@ -8,7 +8,7 @@ namespace LootCouncil.Security
 {
     public static class AuthorizationHelper
     {
-        public const string AdminRoles = nameof(ApplicationRole.GuildMaster);
+        public const string AdminRoles = GuildMasterRole + "," + nameof(ApplicationRole.Admin);
         public const string GuildMasterRole = nameof(ApplicationRole.GuildMaster);
     }
 }

@@ -34,8 +34,7 @@ namespace LootCouncil
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<AppDbContext>(options => options.UseMySql("input-database-connection-string-here"));
-            
+            services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration["Database:ConnectionString"]));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<AppDbContext>();
@@ -47,7 +46,6 @@ namespace LootCouncil
                                 .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-
 
             services.AddHttpContextAccessor();
 

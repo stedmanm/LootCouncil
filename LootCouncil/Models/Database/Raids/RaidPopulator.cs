@@ -29,6 +29,7 @@ namespace LootCouncil.Models.Database.Raids
             RaidIds raidIds = new RaidIds();
             new MCPopulator(modelBuilder, raidIds).PopulateRaid();
             new BWLPopulator(modelBuilder, raidIds).PopulateRaid();
+            new AQ40Populator(modelBuilder, raidIds).PopulateRaid();
         }
 
         private Raid CreateRaid(string name, string shortName)

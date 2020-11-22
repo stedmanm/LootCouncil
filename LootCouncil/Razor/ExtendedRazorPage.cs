@@ -48,6 +48,11 @@ namespace LootCouncil.Razor
             return (string)TempData[RazorPageHelper.ErrorMessageKey];
         }
 
+        protected string GetWarningMessage()
+        {
+            return (string)TempData[RazorPageHelper.WarningMessageKey];
+        }
+
         protected bool HasSuccessMessage()
         {
             return TempData.ContainsKey(RazorPageHelper.SuccessMessageKey);
@@ -56,6 +61,11 @@ namespace LootCouncil.Razor
         protected bool HasErrorMessage()
         {
             return TempData.ContainsKey(RazorPageHelper.ErrorMessageKey);
+        }
+
+        protected bool HasWarningMessage()
+        {
+            return TempData.ContainsKey(RazorPageHelper.WarningMessageKey);
         }
 
         protected bool IsSignedInUser()

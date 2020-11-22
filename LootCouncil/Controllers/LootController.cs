@@ -155,12 +155,17 @@ namespace LootCouncil.Controllers
                 return ViewAddOrEditEntity(model);
             }
 
+            AddOrUpdateLootResult addOrUpdateLootResult; 
             if (loot.IsNew)
-                lootRepository.AddLoot(raidEvent, loot);
+                addOrUpdateLootResult = lootRepository.AddLoot(raidEvent, loot);
             else
-                lootRepository.UpdateLoot(loot);
-
+                addOrUpdateLootResult = lootRepository.UpdateLoot(loot);
+            
             SetSuccessMessage($"{character.Name} was awarded with {item.Name} for {loot.ItemNeedReason.DisplayEnum()}.");
+            
+            if(addOrUpdateLootResult.AffectedItemPriority != null)
+                SetWarningMessage($"{character.Name} with priority #{addOrUpdateLootResult.DeletedCharacterPriority.Priority} was removed from loot priority: {addOrUpdateLootResult.AffectedItemPriority.Name}.");
+
             return RedirectToAction(nameof(AddLoot), new { raidEventId = raidEvent.Id });
         }
     }

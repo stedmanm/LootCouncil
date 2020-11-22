@@ -46,9 +46,10 @@ namespace LootCouncil.Models.Entities
             Priorities.Add(new CharacterPriority { Character = character, Priority = priority });
         }
 
-        public void DeleteCharacterPriority(Character character)
+        public CharacterPriority DeleteCharacterPriority(Character character)
         {
             int index = IndexOf(character);
+            CharacterPriority deleted = Priorities[index];
             Priorities.RemoveAt(index);
             
             int i = 1;
@@ -58,6 +59,8 @@ namespace LootCouncil.Models.Entities
                 characterPriority.Priority = i;
                 i++;
             }
+
+            return deleted;
         }
 
         public void IncreaseCharacterPriority(Character character)

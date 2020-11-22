@@ -11,6 +11,7 @@ namespace LootCouncil.Razor
         public const string PageTitleKey = "PageTitle";
         public const string SuccessMessageKey = "SuccessMessage";
         public const string ErrorMessageKey = "ErrorMessage";
+        public const string WarningMessageKey = "WarningMessage";
         public const string ViewNameKey = "HtmlFileName";
 
         public const string ItemDropDownId = "itemNames";

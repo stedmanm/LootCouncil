@@ -62,6 +62,11 @@ namespace LootCouncil.Controllers
             TempData[RazorPageHelper.ErrorMessageKey] = errorMessage;
         }
 
+        protected void SetWarningMessage(string warningMessage)
+        {
+            TempData[RazorPageHelper.WarningMessageKey] = warningMessage;
+        }
+
         protected ApplicationUser GetCurrentUser()
         {
             return controllerServices.UserProvider.GetCurrentUser();

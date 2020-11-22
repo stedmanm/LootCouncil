@@ -11,8 +11,8 @@ namespace LootCouncil.Models.Repositories
 {
     public interface ILootRepository
     {
-        Loot AddLoot(RaidEvent raidEvent, Loot loot);
-        Loot UpdateLoot(Loot loot);
+        AddOrUpdateLootResult AddLoot(RaidEvent raidEvent, Loot loot);
+        AddOrUpdateLootResult UpdateLoot(Loot loot);
         IList<Loot> GetLootByRaidEvent(RaidEvent raidEvent);
         bool HasLoot(RaidEvent raidEvent);
         void DeleteLoot(Loot loot);
@@ -32,26 +32,34 @@ namespace LootCouncil.Models.Repositories
             this.itemPriorityRepository = itemPriorityRepository;
         }
 
-        public Loot AddLoot(RaidEvent raidEvent, Loot loot)
+        public AddOrUpdateLootResult AddLoot(RaidEvent raidEvent, Loot loot)
         {
-            RaidEventHasLoot raidEventHasLoot = new RaidEventHasLoot
+            using (var transaction = AppDbContext.Database.BeginTransaction())
             {
-                Parent = raidEvent,
-                Child = loot
-            };
+                RaidEventHasLoot raidEventHasLoot = new RaidEventHasLoot
+                {
+                    Parent = raidEvent,
+                    Child = loot
+                };
 
-            AppDbContext.RaidEventHasLoots.Add(raidEventHasLoot);
-            UpdateItemPriority(loot);
-            AppDbContext.SaveChanges();
-            return loot;
+                AppDbContext.RaidEventHasLoots.Add(raidEventHasLoot);
+                AddOrUpdateLootResult result = UpdateItemPriority(loot);
+                AppDbContext.SaveChanges();
+                transaction.Commit();
+                return result;
+            }
         }
 
-        public Loot UpdateLoot(Loot loot)
+        public AddOrUpdateLootResult UpdateLoot(Loot loot)
         {
-            AppDbContext.Loots.Update(loot);
-            UpdateItemPriority(loot);
-            AppDbContext.SaveChanges();
-            return loot;
+            using (var transaction = AppDbContext.Database.BeginTransaction())
+            {
+                AppDbContext.Loots.Update(loot);
+                AddOrUpdateLootResult result = UpdateItemPriority(loot);
+                AppDbContext.SaveChanges();
+                transaction.Commit();
+                return result;
+            }
         }
 
         public Loot GetLootByCharacterAndItem(RaidEvent raidEvent, Character character, Item item)
@@ -88,17 +96,19 @@ namespace LootCouncil.Models.Repositories
                 return loot;
 
             return null;
-        }
+        }  
 
         private IQueryable<Loot> QueryLootByRaidEvent(RaidEvent raidEvent, bool includeEntities)
         {
             return AppDbContext.RaidEventHasLoots.QueryChildren<RaidEventHasLoot, RaidEvent, Loot>(raidEvent, includeEntities);
         }
 
-        private void UpdateItemPriority(Loot loot)
+        private AddOrUpdateLootResult UpdateItemPriority(Loot loot)
         {
             long originalCharacterId = 0;
             long originalItemId = 0;
+
+            var result = new AddOrUpdateLootResult();
             
             if (!loot.IsNew)
             {
@@ -112,10 +122,22 @@ namespace LootCouncil.Models.Repositories
                 ItemPriority itemPriority = itemPriorityRepository.GetItemPriorityByCharacterAndItem(loot.Character, loot.Item);
                 if (itemPriority != null)
                 {
-                    itemPriority.DeleteCharacterPriority(loot.Character);
+                    CharacterPriority deleted = itemPriority.DeleteCharacterPriority(loot.Character);
+                    
+                    result.AffectedItemPriority = itemPriority;
+                    result.DeletedCharacterPriority = deleted;
+                    
                     itemPriorityRepository.UpdateItemPriority(itemPriority);
                 }
             }
+
+            return result;
         }
+    }
+
+    public class AddOrUpdateLootResult
+    {
+        public ItemPriority AffectedItemPriority { get; set; }
+        public CharacterPriority DeletedCharacterPriority { get; set; }
     }
 }

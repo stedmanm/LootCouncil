@@ -36,9 +36,12 @@ namespace LootCouncil.Models.Database
                         .HasIndex(r => r.ShortName)
                         .IsUnique();
 
-
             modelBuilder.Entity<RaidEvent>()
                         .HasIndex(nameof(RaidEvent.RaidTeam) + "Id", nameof(RaidEvent.Raid) + "Id", nameof(RaidEvent.Date))
+                        .IsUnique();
+
+            modelBuilder.Entity<CharacterPriority>()
+                        .HasIndex(nameof(CharacterPriority.ItemPriorityId), nameof(CharacterPriority.Character) + "Id")
                         .IsUnique();
 
             modelBuilder.BuildUniqueConstraintForHasEntities();

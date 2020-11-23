@@ -23,7 +23,12 @@ namespace LootCouncil.Controllers
         public IActionResult Index()
         {
             var user = GetCurrentUser();
-            SetPageTitle($"Welcome to {user?.Guild.Name ?? "Loot Council"}!");
+
+            string pageTitle = $"Welcome to Loot Council!";
+            if (user != null)
+                pageTitle = $"{user.DisplayName} welcome to {user.Guild.Name}!";
+
+            SetPageTitle(pageTitle);
             return View();
         }
     }

@@ -30,6 +30,7 @@ namespace LootCouncil.Models.Database.Raids
             new MCPopulator(modelBuilder, raidIds).PopulateRaid();
             new BWLPopulator(modelBuilder, raidIds).PopulateRaid();
             new AQ40Populator(modelBuilder, raidIds).PopulateRaid();
+            new NaxxPopulator(modelBuilder, raidIds).PopulateRaid();
         }
 
         private Raid CreateRaid(string name, string shortName)

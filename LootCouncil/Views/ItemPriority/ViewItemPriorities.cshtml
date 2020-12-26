@@ -59,7 +59,7 @@
     }
 }
 
-@if (Model.ItemPriorities.Any())
+@if (Model.ItemPriorities.Any() && IsAdmin())
 {
     <a asp-controller="@ItemPriorityController.GetName()" asp-action="@nameof(ItemPriorityController.AddCharacterPriority)"
        asp-route-itemPriorityId="@Model.SelectedItemPriority.Id" class="btn btn-primary">Add Character</a>

@@ -70,6 +70,7 @@ namespace LootCouncil.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = AuthorizationHelper.AdminRoles)]
         public IActionResult EditItemPriorityName(long id)
         {
             ItemPriority itemPriority = itemPriorityRepository.GetItemPriorityById(id);
@@ -84,6 +85,7 @@ namespace LootCouncil.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AuthorizationHelper.AdminRoles)]
         public IActionResult EditItemPriorityName(ItemPriorityNameViewModel model)
         {
             if (!IsModelStateValid || !ValidateItemPriorityName(model.ItemPriorityName))
@@ -98,6 +100,7 @@ namespace LootCouncil.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = AuthorizationHelper.AdminRoles)]
         public IActionResult AddCharacterPriority(long itemPriorityId)
         {
             return View(new AddCharacterPriorityViewModel { ItemPriorityId = itemPriorityId });
